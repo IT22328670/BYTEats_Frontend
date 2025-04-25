@@ -1,0 +1,24 @@
+[
+    {
+      "_id": "664eaf900a1f7dbb5a1c1001",
+      "name": "Margherita Pizza",
+      "price": 1200,
+      "description": "Classic cheese and tomato pizza",
+      "category": "Pizza"
+    },
+    {
+      "_id": "664eaf900a1f7dbb5a1c1002",
+      "name": "Chicken Burger",
+      "price": 800,
+      "description": "Grilled chicken patty with lettuce and mayo",
+      "category": "Burger"
+    },
+    {
+      "_id": "664eaf900a1f7dbb5a1c1003",
+      "name": "Veggie Wrap",
+      "price": 600,
+      "description": "Healthy wrap stuffed with vegetables and hummus",
+      "category": "Wrap"
+    }
+  ]
+  
