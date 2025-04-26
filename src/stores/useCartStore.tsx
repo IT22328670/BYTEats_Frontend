@@ -19,15 +19,18 @@ interface CartState {
   updateItem: (userId: string, itemId: string, quantity: number) => Promise<void>;
   removeItem: (userId: string, itemId: string) => Promise<void>;
   clearCart: (userId: string) => Promise<void>;
+  checkout: (userId: string) => Promise<void>;
 }
 
 export const useCartStore = create<CartState>((set) => ({
   items: [],
   userId: 'user', 
+
   fetchCart: async (userId) => {
     const res = await axios.get(`/api/cart/${userId}`);
     set({ items: res.data.items });
   },
+
   addToCart: async (userId, item) => {
     await axios.post('/api/cart/add', { 
       userId, 
@@ -39,19 +42,27 @@ export const useCartStore = create<CartState>((set) => ({
     
     await useCartStore.getState().fetchCart(userId);
   },
+
   updateItem: async (userId, itemId, quantity) => {
     await axios.put('/api/cart/update', { userId, itemId, quantity });
     
     await useCartStore.getState().fetchCart(userId);
   },
+
   removeItem: async (userId, itemId) => {
     await axios.delete('/api/cart/remove', { data: { userId, itemId } });
     
     await useCartStore.getState().fetchCart(userId);
   },
+
   clearCart: async (userId) => {
     await axios.delete('/api/cart/clear', { data: { userId } });
     
     await useCartStore.getState().fetchCart(userId);
   },
+
+  checkout: async (userId) => {
+    await axios.post(`/api/cart/checkout/${userId}`);
+    await useCartStore.getState().fetchCart(userId);
+  }
 }));
