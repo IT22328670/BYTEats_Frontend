@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useCartStore } from '@/stores/useCartStore';
 import { toast } from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 interface MenuItem {
   _id: string;
@@ -15,6 +16,7 @@ interface MenuItem {
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const { userId, addToCart } = useCartStore();
+  const router = useRouter();
 
   useEffect(() => {
     const fetchMenu = async () => {
@@ -55,6 +57,7 @@ export default function MenuPage() {
                   quantity: 1,
                 });
                 toast.success(`${item.name} added to cart!`);
+                router.push('/cart');
               }}
             >
               Add to Cart
