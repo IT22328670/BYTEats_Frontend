@@ -6,7 +6,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { Trash2 } from 'lucide-react';
 
 export default function CartPage() {
-  const { items: cartItems, fetchCart, updateItem, removeItem, clearCart } = useCartStore();
+  const { items: cartItems, fetchCart, updateItem, removeItem, clearCart, checkout } = useCartStore();
 
   useEffect(() => {
     fetchCart("user");
@@ -123,9 +123,13 @@ export default function CartPage() {
               </div>
             </div>
 
-            <button className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition shadow-md">
+            <button 
+              onClick={handleCheckout}
+              className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-semibold transition shadow-md"
+            >
               Proceed to Checkout
             </button>
+
           </div>
         </div>
       )}
@@ -167,4 +171,17 @@ export default function CartPage() {
       toast.error("Failed to clear cart!");
     }
   }
+
+  async function handleCheckout() {
+    if (!confirm("Are you sure you want to place the order?")) return;
+  
+    try {
+      await checkout("user");
+      toast.success("Order placed successfully!");
+    } catch (err) {
+      console.error("Checkout failed:", err);
+      toast.error("Failed to place order!");
+    }
+  }
+  
 }
