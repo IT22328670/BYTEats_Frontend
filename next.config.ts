@@ -41,6 +41,15 @@ const nextConfig: NextConfig = {
         source: '/api/order/:path*',
         destination: 'http://localhost:5000/api/order/:path*',
       },
+      //this is review do not change it
+      {
+        source: '/api/:path*',
+        destination: 'http://localhost:5002/api/:path*',
+      },
+      {
+        source: '/api/payment/:path*',
+        destination: 'http://localhost:5003/api/payment/:path*',
+      },
     ];
   },
 };
