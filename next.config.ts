@@ -12,8 +12,8 @@ const nextConfig: NextConfig = {
         destination: 'http://localhost:5002/api/cart/:path*',
       },
       {
-        source: '/api/delivery/:path*',
-        destination: 'http://localhost:5000/api/delivery/:path*',
+        source: '/api/deliveryPerson/:path*',
+        destination: 'http://localhost:5000/api/deliveryPerson/:path*',
       },
       {
         source: '/api/auth/:path*',
@@ -22,6 +22,10 @@ const nextConfig: NextConfig = {
       {
         source: '/api/user/:path*',
         destination: 'http://localhost:5000/api/user/:path*',
+      },
+      {
+        source: '/api/order/:path*',
+        destination: 'http://localhost:5000/api/order/:path*',
       },
     ];
   },

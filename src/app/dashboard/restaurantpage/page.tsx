@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { JSX, useState } from 'react';
 import React from 'react';
 import { Menu, User, Utensils, ListOrdered, Settings } from 'lucide-react';
 

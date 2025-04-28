@@ -30,7 +30,7 @@ const Login = () => {
         router.push('/dashboard/restaurantpage');
       } else if (role === 'auth') {
         router.push('/dashboard/userpage');
-      } else if (role === 'delivery') {
+      } else if (role === 'deliveryPerson') {
         router.push('/dashboard/deliverypage');
       }
     } catch (err) {
@@ -54,7 +54,7 @@ const Login = () => {
             >
               <option value="restaurant">Restaurant</option>
               <option value="auth">Customer</option>
-              <option value="delivery">Delivery Staff</option>
+              <option value="deliveryPerson">Delivery Staff</option>
             </select>
           </div>
 

@@ -8,13 +8,14 @@ const deliverySignUp = () => {
   const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [nic, setNic] = useState("");
-  const [vehicle, setVehicle] = useState("");
+  const [NIC, setNic] = useState("");
+  const [vehicleNumber, setVehicleNumber] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [address, setAddress] = useState("");
   const [licenseNumber, setLicenseNumber] = useState("");
+  const [currentLocation, setCurrentLocation] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,16 +23,17 @@ const deliverySignUp = () => {
     setError("");
 
     try {
-      const response = await axios.post("http://localhost:5000/api/delivery/register", {
-        name,
-        age,
-        nic,
-        vehicle,
-        mobile,
-        email,
-        password,
-        address,
-        licenseNumber,
+      const response = await axios.post("http://localhost:5000/api/deliveryPerson/register", {
+        name, 
+        email, 
+        password, 
+        mobile, 
+        age, 
+        NIC, 
+        vehicleNumber, 
+        currentLocation, 
+        address, 
+        licenseNumber
       });
 
       const { token, delivery } = response.data;
@@ -80,7 +82,7 @@ const deliverySignUp = () => {
                 placeholder="NIC (Optional)"
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={nic}
+                value={NIC}
                 onChange={(e) => setNic(e.target.value)}
               />
             </div>
@@ -91,8 +93,8 @@ const deliverySignUp = () => {
                 placeholder="Vehicle Type"
                 type="text"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md"
-                value={vehicle}
-                onChange={(e) => setVehicle(e.target.value)}
+                value={vehicleNumber}
+                onChange={(e) => setVehicleNumber(e.target.value)}
                 required
               />
             </div>
@@ -155,6 +157,17 @@ const deliverySignUp = () => {
                   className="w-full px-4 py-2 border border-gray-300 rounded-md"
                   value={licenseNumber}
                   onChange={(e) => setLicenseNumber(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <input
+                  placeholder="Current Location"
+                  type="text"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md"
+                  value={currentLocation}
+                  onChange={(e) => setCurrentLocation(e.target.value)}
                   required
                 />
               </div>
