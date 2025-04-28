@@ -1,8 +1,13 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { CldUploadWidget } from "next-cloudinary";
 import axios from "axios";
+
+interface CloudinaryResult {
+  public_id: string;
+}
 
 const RestaurantSignUp = () => {
   const [name, setName] = useState("");
@@ -13,13 +18,16 @@ const RestaurantSignUp = () => {
   const [ownerName, setOwnerName] = useState("");
   const [mobile, setMobile] = useState("");
   const [success, setSuccess] = useState(false);
+
+  const [publicId, setPublicId] = useState("");
+
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate form
-    if (!name || !email || !password || !location || !ownerName || !mobile) {
+    if (!name || !email || !password || !location || !ownerName || !mobile || !publicId) {
       setError("Please fill in all fields.");
       return;
     }
@@ -29,13 +37,17 @@ const RestaurantSignUp = () => {
       email,
       password,
       location,
-      ownerName,
+      owner_name : ownerName,
       mobile,
       role: "restaurant",
+      imageUrl: publicId
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/api/restaurant/register', restaurantData);
+      const response = await axios.post(
+        "http://localhost:5000/api/restaurant/register",
+        restaurantData
+      );
 
       if (response.status === 201) {
         setSuccess(true);
@@ -43,8 +55,12 @@ const RestaurantSignUp = () => {
           router.push("/dashboard/restaurantpage");
         }, 2000);
       }
-    } catch (error: any) {
-      setError(error.response?.data.message || "An error occurred. Please try again.");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("An error occurred. Please try again.");
+      }
       setSuccess(false);
     }
   };
@@ -53,11 +69,20 @@ const RestaurantSignUp = () => {
     <div className="max-w-md mx-auto p-6 border rounded-lg shadow-md">
       <h2 className="text-2xl font-semibold mb-6">Create Restaurant</h2>
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      {success && <div className="text-green-500 mb-4">Restaurant created successfully!</div>}
+      {success && (
+        <div className="text-green-500 mb-4">
+          Restaurant created successfully!
+        </div>
+      )}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Restaurant Name */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Restaurant Name</label>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Restaurant Name
+          </label>
           <input
             type="text"
             id="name"
@@ -70,7 +95,12 @@ const RestaurantSignUp = () => {
 
         {/* Location */}
         <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
+          <label
+            htmlFor="location"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Location
+          </label>
           <input
             type="text"
             id="location"
@@ -83,7 +113,12 @@ const RestaurantSignUp = () => {
 
         {/* Owner Name */}
         <div>
-          <label htmlFor="owner_name" className="block text-sm font-medium text-gray-700">Owner Name</label>
+          <label
+            htmlFor="owner_name"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Owner Name
+          </label>
           <input
             type="text"
             id="owner_name"
@@ -96,7 +131,12 @@ const RestaurantSignUp = () => {
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Email
+          </label>
           <input
             type="email"
             id="email"
@@ -109,7 +149,12 @@ const RestaurantSignUp = () => {
 
         {/* Mobile */}
         <div>
-          <label htmlFor="mobile" className="block text-sm font-medium text-gray-700">Mobile</label>
+          <label
+            htmlFor="mobile"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Mobile
+          </label>
           <input
             type="text"
             id="mobile"
@@ -122,7 +167,12 @@ const RestaurantSignUp = () => {
 
         {/* Password */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Password
+          </label>
           <input
             type="password"
             id="password"
@@ -133,9 +183,44 @@ const RestaurantSignUp = () => {
           />
         </div>
 
+        {/* Image Upload */}
+        <div>
+          <label
+            htmlFor="Image-Upload"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Upload Image
+          </label>
+          <CldUploadWidget uploadPreset="kwikjudn" 
+          onSuccess={(result) => {
+            if(result.event !== "success") return;
+            const info = result.info as CloudinaryResult;
+            setPublicId(info.public_id); 
+          }}
+          onQueuesEnd={(result, { widget }) => {
+            widget.close();
+          }}>
+            {({ open }) => {
+              return (
+                <button
+                  type="button"
+                  className="w-full bg-gray-500 text-white py-2 rounded-md hover:bg-gray-800 transition"
+                  onClick={() => open()}
+                >
+                  Upload an Image
+                </button>
+              );
+            }}
+          </CldUploadWidget>
+        </div>
+
         {/* Submit Button */}
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">
-          Create Restaurant
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition"
+          disabled={!publicId}
+        >
+          {publicId ? "Create Restaurant" : "Upload Image First"}
         </button>
       </form>
     </div>
