@@ -47,6 +47,11 @@ const nextConfig: NextConfig = {
         source: '/api/order/:path*',
         destination: 'http://localhost:5000/api/order/:path*',
       },
+      {
+      source: '/api/reviews:path*',
+      destination: 'http://localhost:5002/api/reviews:path*',
+      },
+
       // Add payment API rewrite rules
       {
         source: '/api/payment/:path*',
