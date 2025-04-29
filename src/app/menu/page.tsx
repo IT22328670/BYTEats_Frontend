@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useCartStore } from '@/stores/useCartStore';
+import axios from 'axios';
 import { toast } from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
@@ -15,9 +15,19 @@ interface MenuItem {
 
 export default function MenuPage() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const { userId, addToCart } = useCartStore();
+  const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
 
+  // Load userId from localStorage
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUserId(parsed._id);
+    }
+  }, []);
+
+  // Load menu
   useEffect(() => {
     const fetchMenu = async () => {
       const res = await fetch('/data/menu.json');
@@ -26,6 +36,29 @@ export default function MenuPage() {
     };
     fetchMenu();
   }, []);
+
+  const handleAddToCart = async (item: MenuItem) => {
+    if (!userId) {
+      toast.error('You must be logged in to add to cart.');
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:5002/api/cart/add', {
+        userId,
+        itemId: item._id,
+        quantity: 1,
+        price: item.price,
+        name: item.name,
+      });
+
+      toast.success(`${item.name} added to cart`);
+      router.push('/cart');
+    } catch (error) {
+      console.error('Add to cart failed:', error);
+      toast.error('Failed to add item to cart');
+    }
+  };
 
   return (
     <div className="p-6 max-w-7xl mx-auto min-h-screen bg-white">
@@ -47,18 +80,7 @@ export default function MenuPage() {
             </div>
             <button
               className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-medium py-2 rounded-lg transition"
-              onClick={() => {
-                addToCart(userId, {
-                  itemId: {
-                    _id: item._id,
-                    name: item.name,
-                    price: item.price,
-                  },
-                  quantity: 1,
-                });
-                toast.success(`${item.name} added to cart!`);
-                router.push('/cart');
-              }}
+              onClick={() => handleAddToCart(item)}
             >
               Add to Cart
             </button>

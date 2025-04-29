@@ -1,15 +1,21 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useCartStore } from '@/stores/useCartStore';
 import { toast, Toaster } from "react-hot-toast";
 import { Trash2 } from 'lucide-react';
 
 export default function CartPage() {
   const { items: cartItems, fetchCart, updateItem, removeItem, clearCart, checkout } = useCartStore();
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCart("user");
+    const user = localStorage.getItem('user');
+    if (user) {
+      const userObj = JSON.parse(user);
+      setUserId(userObj._id); 
+      fetchCart(userObj._id);
+    }
   }, [fetchCart]);
 
   const subtotal = cartItems.reduce(
@@ -18,6 +24,10 @@ export default function CartPage() {
   );
   const taxes = subtotal * 0.1;
   const total = subtotal + taxes;
+
+  if (!userId) {
+    return <div className="text-center p-6">Loading user data...</div>;
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
@@ -129,18 +139,17 @@ export default function CartPage() {
             >
               Proceed to Checkout
             </button>
-
           </div>
         </div>
       )}
     </div>
   );
 
+  // === Handlers with dynamic userId ===
   async function updateQuantity(itemId: string, newQuantity: number) {
-    if (newQuantity < 1) return;
-
+    if (newQuantity < 1 || !userId) return;
     try {
-      await updateItem("user", itemId, newQuantity);
+      await updateItem(userId, itemId, newQuantity);
       toast.success("Cart updated!");
     } catch (err) {
       console.error("Failed to update quantity:", err);
@@ -149,10 +158,9 @@ export default function CartPage() {
   }
 
   async function removeItemFromCart(itemId: string) {
-    if (!confirm("Remove this item from your cart?")) return;
-
+    if (!confirm("Remove this item from your cart?") || !userId) return;
     try {
-      await removeItem("user", itemId);
+      await removeItem(userId, itemId);
       toast.success("Item removed!");
     } catch (err) {
       console.error("Failed to remove item:", err);
@@ -161,10 +169,9 @@ export default function CartPage() {
   }
 
   async function clearCartItems() {
-    if (!confirm("Are you sure you want to clear the cart?")) return;
-
+    if (!confirm("Are you sure you want to clear the cart?") || !userId) return;
     try {
-      await clearCart("user");
+      await clearCart(userId);
       toast.success("Cart cleared!");
     } catch (err) {
       console.error("Failed to clear cart:", err);
@@ -173,15 +180,13 @@ export default function CartPage() {
   }
 
   async function handleCheckout() {
-    if (!confirm("Are you sure you want to place the order?")) return;
-  
+    if (!confirm("Are you sure you want to place the order?") || !userId) return;
     try {
-      await checkout("user");
+      await checkout(userId);
       toast.success("Order placed successfully!");
     } catch (err) {
       console.error("Checkout failed:", err);
       toast.error("Failed to place order!");
     }
   }
-  
 }

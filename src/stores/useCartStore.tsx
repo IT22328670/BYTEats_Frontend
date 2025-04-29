@@ -24,7 +24,7 @@ interface CartState {
 
 export const useCartStore = create<CartState>((set) => ({
   items: [],
-  userId: 'user', 
+  userId: '', 
 
   fetchCart: async (userId) => {
     const res = await axios.get(`/api/cart/${userId}`);
@@ -39,9 +39,9 @@ export const useCartStore = create<CartState>((set) => ({
       name: item.itemId.name, 
       price: item.itemId.price 
     });
-    
     await useCartStore.getState().fetchCart(userId);
   },
+  
 
   updateItem: async (userId, itemId, quantity) => {
     await axios.put('/api/cart/update', { userId, itemId, quantity });
